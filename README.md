@@ -1,7 +1,7 @@
 Beware: Work in progress
 
 # OERbox for wordpress
-Experimental wordpress plugin - add custom fields for OER metadata for regular posts and pages via https://metabox.io, fields will be added to HTML head in schema.org format
+Experimental wordpress plugin - add custom fields for OER metadata for regular posts and pages via https://metabox.io, fields will be added to HTML head in schema.org format (machine readable information)
 
 1. Install wordpress
 2. Install and activate https://wordpress.org/plugins/meta-box/
@@ -15,3 +15,9 @@ Goals:
 
 ![Alt text](screenshot1.png)
 ![Alt text](screenshot2.png)
+
+Projects I have in mind creating this:
+- https://oer.uni-leipzig.de
+- https://bridge.nrw/index.php/betriebswirtschaftslehre/
+
+Inspired by https://oervz.openbiblio.eu/
