@@ -23,4 +23,4 @@ Projects I have in mind creating this:
 - https://oer.uni-leipzig.de
 - https://bridge.nrw/index.php/betriebswirtschaftslehre/
 
-Inspired by https://oervz.openbiblio.eu/ and http://blog.lobid.org/2019/05/17/skohub.html
+Inspired by https://oervz.openbiblio.eu/ and http://blog.lobid.org/2019/05/17/skohub.html and https://hoou.de
