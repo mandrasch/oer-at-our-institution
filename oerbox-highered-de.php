@@ -9,14 +9,20 @@
  * License: CC0
  */
 
+ // 2DO: custom field: show_oer box at end of article content?
+
 // Generated with
  function oerbox_get_meta_box( $meta_boxes ) {
  	$prefix = 'oerbox-';
 
+  // 2DO: check if pods is installed, get all page types of pods.io
+
+
  	$meta_boxes[] = array(
  		'id' => 'oerbox',
  		'title' => esc_html__( 'OERbox metadata fields', 'oerbox' ),
- 		'post_types' => array('post', 'page' ),
+    // 2DO: "materials" was hardcoded here, we need to solve this dynamically
+ 		'post_types' => array('post', 'page' , 'material'),
  		'context' => 'advanced',
  		'priority' => 'default',
  		'autosave' => 'true',
