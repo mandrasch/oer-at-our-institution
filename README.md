@@ -1,5 +1,8 @@
 Beware: Work in progress
 
+# OERbox for wordpress
+Experimental wordpress plugin - add custom fields for OER metadata for regular posts and pages via https://metabox.io, fields will be added to HTML head in schema.org format
+
 1. Install wordpress
 2. Install and activate https://wordpress.org/plugins/meta-box/
 3. Copy this repo to /wp-content/plugins/
