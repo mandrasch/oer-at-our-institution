@@ -39,14 +39,31 @@
  					'https://creativecommons.org/licenses/by-sa/4.0/' => esc_html__( 'CC BY-ShareAlike 4.0', 'oerbox' ),
  				),
  			),
- 			array(
+      array(
+				'id' => $prefix . 'creator_persons',
+				'type' => 'text_list',
+				'name' => esc_html__( 'Urheber*innen: Person(en)', 'metabox-online-generator' ),
+				'desc' => esc_html__( 'Natürliche Personen, die bei der Nachnutzung genannt werden sollen.', 'metabox-online-generator' ),
+				'options' => array(
+          'Vorname'=>'','Nachname'=>'',
+				),
+				'clone' => 'true',
+			),
+      array(
+				'id' => $prefix . 'creator_organizations',
+				'type' => 'text',
+				'name' => esc_html__( 'Urheber: Organisation(en)', 'metabox-online-generator' ),
+				'desc' => esc_html__( 'Organisation, Institution, Projekt, welches bei Nachnutzung genannt werden soll', 'metabox-online-generator' ),
+        'clone'       => true,
+			),
+ 			/*array(
  				'id' => $prefix . 'license_attribution',
  				'type' => 'textarea',
  				'name' => esc_html__( 'Urheber*innen-Attribution', 'oerbox' ),
  				'desc' => esc_html__( 'Wie sollen die Ersteller*innen bei einer Nachnutzung von Dritten angegeben werden?', 'oerbox' ),
  				'placeholder' => esc_html__( 'Bspw. \"Getrude Blanch und Rózsa Péter\" oder \"Hedy Lamarr für Projekt42\"', 'oerbox' ),
  				'rows' => 3,
- 			),
+ 			),*/
  			array(
  				'id' => $prefix . 'created_year',
  				'type' => 'text',
@@ -124,26 +141,27 @@
 // Add scripts to wp_head()
 function oerbox_add_metadata_to_head() {
 
-  //var_dump(get_post_meta(get_the_ID()));
+  // 2DO: will double definition of schema.org break the page? :/ (SEO yoast e.g.?)
+
+  var_dump(get_post_meta(get_the_ID()));
+
+  // 2DO: use isset / do not cause page errors
+
+  $title = get_the_title(get_the_ID());
+  $url = "";
+
+  // 2DO: get creator_persons and creator_organizations, check if empty
+
   // this is important for search engines (e.g. Google uses it)
   $license_url = esc_html( get_post_meta( get_the_ID(), 'oerbox-license_url', true ));
 	echo "<link rel='license' href='{$license_url}' />";
-
-  // add ld-json
-    /*<script type="application/ld+json">{
-  "identifier": "286e4ce6-54b0-4c4f-aa90-d9004138d5d0",
+  ?>
+  <script type="application/ld+json">{
   "creator": {
     "@type": "Person",
     "givenName": "Anja",
     "familyName": "Schreiber"
   },
-  "requirements": "Broschürendruckformat (links gefaltet).\nDatei erstellt mit Microsoft Publisher(.pub). Word-Datei (.docx) enthält nur den Text.",
-  "keywords": [
-    "ZOERR",
-    "OER",
-    "Open educational Resources",
-    "Hochschule"
-  ],
   "@type": [
     "CreativeWork",
     "MediaObject"
@@ -153,7 +171,6 @@ function oerbox_add_metadata_to_head() {
   "dateModified": "2019-09-26T18:12:12+02:00",
   "@context": "http://schema.org/",
   "version": "1.5",
-  "ContentSize": "1897979",
   "url": "https://uni-tuebingen.oerbw.de/edu-sharing/components/render/286e4ce6-54b0-4c4f-aa90-d9004138d5d0",
   "datePublished": "2019-09-26T18:11:54+02:00",
   "license": "https://creativecommons.org/licenses/by-sa/4.0/deed.en",
@@ -165,7 +182,8 @@ function oerbox_add_metadata_to_head() {
   },
   "learningResourceType": "teaching_aids",
   "thumbnailUrl": "https://uni-tuebingen.oerbw.de/edu-sharing/preview?nodeId=286e4ce6-54b0-4c4f-aa90-d9004138d5d0&storeProtocol=workspace&storeId=SpacesStore&dontcache=1571228718151"
-}</script>*/
+}</script>
 
+  <?php
 }
 add_action( 'wp_head', 'oerbox_add_metadata_to_head' );
