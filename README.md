@@ -12,6 +12,7 @@ Experimental wordpress plugin - add custom fields for OER metadata for regular p
 Goals:
 - :heavy_check_mark: add license URL to "link rel="license""-tag in HTML head
 - :o: Add schema.org LD-JSON to HTML head in a compliant way (see source code of https://www.oerbw.de/edu-sharing/components/render/eb6f6159-021e-4985-8aaa-4d8a36e9b6a2)
+-  :o: Combine with custom types of http://pods.io to create a flexible mini-OER-repository for institutions
 
 ![Alt text](screenshot1.png)
 ![Alt text](screenshot2.png)
