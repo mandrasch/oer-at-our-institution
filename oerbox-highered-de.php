@@ -22,7 +22,7 @@
  		'id' => 'oerbox',
  		'title' => esc_html__( 'OERbox metadata fields', 'oerbox' ),
     // 2DO: "materials" was hardcoded here, we need to solve this dynamically
- 		'post_types' => array('post', 'page' , 'material'),
+ 		'post_types' => array('post', 'page' , 'material','attachment'),
  		'context' => 'advanced',
  		'priority' => 'default',
  		'autosave' => 'true',
@@ -140,6 +140,8 @@
 // add metadata to the head of HTML
 // Add scripts to wp_head()
 function oerbox_add_metadata_to_head() {
+
+var_dump(get_post_types());
 
   // 2DO: will double definition of schema.org break the page? :/ (SEO yoast e.g.?)
 
