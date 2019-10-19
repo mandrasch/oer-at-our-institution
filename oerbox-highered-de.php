@@ -9,6 +9,8 @@
  * License: CC0
  */
 
+ // 2DO: add custom fields as column? http://localhost/wordpress/pods/wp-admin/upload.php
+// 2DO: add files to sitemap.xml?
  // 2DO: custom field: show_oer box at end of article content?
 
 // Generated with
@@ -141,11 +143,11 @@
 // Add scripts to wp_head()
 function oerbox_add_metadata_to_head() {
 
-var_dump(get_post_types());
+  //var_dump(get_post_types());
 
   // 2DO: will double definition of schema.org break the page? :/ (SEO yoast e.g.?)
 
-  var_dump(get_post_meta(get_the_ID()));
+  //var_dump(get_post_meta(get_the_ID()));
 
   // 2DO: use isset / do not cause page errors
 
@@ -189,3 +191,125 @@ var_dump(get_post_types());
   <?php
 }
 add_action( 'wp_head', 'oerbox_add_metadata_to_head' );
+
+
+// 2DO: custom link for media (attachment) metadata
+
+function oerbox_attachment_fields_to_edit( $fields, $post ) {
+
+
+  // 2DO: check if ID is correct?
+
+  $post_edit_link = "post.php?action=edit&post=".$post->ID."#oerbox";
+
+        $fields['test-media-item'] = array(
+                'label' => 'OERbox Metadaten',
+                'input' => 'html',
+                'html' => '<a href="'.$post_edit_link.'" target="_blank">Link</a>',
+                'show_in_edit' => false,
+        );
+
+        return $fields;
+}
+add_filter( 'attachment_fields_to_edit', 'oerbox_attachment_fields_to_edit', 10, 2 );
+
+// 2DO: Box at media attachment page?
+// 2DO: sitemap for attachment page
+
+// hack for file blocks, we need the id attached as class
+// https://github.com/zgordon/advanced-gutenberg-course/blob/master/lib/block-filters.php
+add_filter( 'render_block', 'oerbox_block_filters', 10, 3);
+function oerbox_block_filters( $block_content, $block ) {
+
+  // 2DO: add is_single?
+
+    // if block is core/file, we attach the id for media metadata handling
+    if( in_array($block['blockName'], array("core/file","core/audio","core/video")) && isset($block['attrs']['id'])) {
+      $block_abbr = str_replace("core/","",$block['blockName']);
+      $output = '<!-- oerbox workaround --><span style="display:none;" class="wp-'.$block_abbr.'-'.$block['attrs']['id'].'">';
+      $output .= '</span><!-- eo oerbox workaround -->';
+      $output .= $block_content;
+      return $output;
+    }
+
+    return $block_content;
+}
+
+
+// 2DO: box at the end of wordpress article
+
+function oerbox_after_content($content) {
+
+  $oerbox_html = "";
+
+
+  // find all image blocks (e.g. class wp-image-27)
+  // only works with gutenberg editor
+  $pattern = '/wp-image-(\d{1,12})/';
+  preg_match_all($pattern, $content, $matches);
+  // $matches[1] > array of the extracted results
+  if(count($matches[1])>0){
+    // add image license info to box
+    foreach($matches[1] as $image_ID){
+      // 2DO: add to list
+      //print_r(get_post_meta($image_ID));
+    }
+  }
+  //print_r($matches); // 3333
+
+  // 2DO: match all media files
+  $pattern = '/wp-file-(\d{1,12})/';
+  $pattern = '/wp-audio-(\d{1,12})/';
+  $pattern = '/wp-video-(\d{1,12})/';
+
+  // find all file blocks div.wp-block-file
+  // 2DO: unfortunately not with id?
+  // 2DO: get url and find out ID?
+  //https://github.com/WordPress/gutenberg/issues/6356
+  // 2 WATCH: https://javascriptforwp.com/extending-wordpress-blocks/
+
+
+  // find all file blocks
+
+  // this only gets attachments uploaded while editing the post :(
+  //$media_attachments = get_attached_media('');
+  // more solutions: https://wordpress.stackexchange.com/questions/288416/how-to-get-all-files-inserted-but-not-attached-to-a-post
+
+  // new gutenberg block option?
+  //print_r(parse_blocks($content ));
+
+  $media_attachments = get_posts( array(
+            'post_type' => 'attachment',
+            'posts_per_page' => -1,
+            'post_parent' => get_the_ID(),
+            'exclude'     => get_post_thumbnail_id()
+        ) );
+
+  if(count($media_attachments) > 0){
+    $oerbox_html .= "Medieninhalte: ";
+    //var_dump($media_attachments);
+    $attachments_debug = "<pre>".print_r($media_attachments,true)."</pre>";
+    $oerbox_html .= $attachments_debug;
+    $oerbox_html .= "<ul>";
+    foreach($media_attachments as $attachment){
+      $oerbox_html .= "<li>TITLE VON AUTHOR/ORGS, LICENSE/URL, QUELLE</li>";
+    }
+    $oerbox_html .= "</ul>";
+  }
+
+$fullcontent = $content.$oerbox_html;
+return $fullcontent;
+
+
+  /*if(is_page() || is_single()) {
+        $beforecontent = 'This goes before the content. Isn\'t that awesome!';
+        $aftercontent = 'And this will come after, so that you can remind them of something, like following you on Facebook for instance.';
+        $fullcontent = $beforecontent . $content . $aftercontent;
+    } else {
+        $fullcontent = $content;
+    }
+    return $fullcontent;*/
+}
+add_filter('the_content', 'oerbox_after_content');
+
+// gett all attached media, show license information (we don't want to mess with the caption?)
