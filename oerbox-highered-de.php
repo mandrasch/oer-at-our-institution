@@ -61,8 +61,7 @@ function oerbox_get_meta_box( $meta_boxes ) {
     // Options: array of key => Label for text boxes
     // Note: key is used as key of array of values stored in the database
     'options' => array(
-        'givenName'    => 'Vorname',
-        'familyName' => 'Nachname',
+        'name'    => 'Name',
         'URL'   => 'URL/Identifier',
     ),
     // Is field cloneable?
