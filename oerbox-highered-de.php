@@ -56,6 +56,30 @@ function oerbox_get_meta_box( $meta_boxes ) {
   // 2DO: check if pods is installed, get all page types of pods.io
 
   $fields = array(
+    // 2DO: how do we deal with author?
+    array(
+    'name'        => esc_html__( 'Mitarbeitende', 'oerbox' ),
+    'desc' => esc_html__( 'Nutzer/innen, die diesen Eintrag mitbearbeiten können. Dies ist nicht die Liste der Urheber/innen, Autor/innen!'),
+    'id'          => 'coeditor_users',
+    'type'        => 'user',
+    'clone'    => false,
+    'multiple' => true,
+    // Field type.
+    'field_type'  => 'select_advanced',
+    // Placeholder.
+    'placeholder' => 'Wordpress-Nutzeraccount auswählen',
+    // Query arguments (optional). No settings means get all published users.
+    // @see https://codex.wordpress.org/Function_Reference/get_users
+    'query_args'  => array(),
+    ),
+    array(
+        'type' => 'divider',
+    ),
+    array(
+    'type' => 'heading',
+    'name' => 'OER-Metadaten',
+    'desc' => 'OER-Metadaten',
+),
     array(
       'id' => $prefix . 'license_url',
       'name' => esc_html__( 'Lizenz', 'oerbox' ),
@@ -68,6 +92,28 @@ function oerbox_get_meta_box( $meta_boxes ) {
         'https://creativecommons.org/licenses/by-sa/4.0/' => esc_html__( 'CC BY-ShareAlike 4.0', 'oerbox' ),
       ),
     ),
+    array(
+    'name'        => 'Autor/innen',
+    'id'          => 'oerauthors',
+    'type'        => 'post',
+
+    // Post type.
+    'post_type'   => 'oerauthor',
+
+    // Field type.
+    'field_type'  => 'select_advanced',
+    'multiple'=>true,
+
+    // Placeholder, inherited from `select_advanced` field.
+    'placeholder' => 'Select an author from authors directory',
+
+    // Query arguments. See https://codex.wordpress.org/Class_Reference/WP_Query
+    /*'query_args'  => array(
+        'post_status'    => 'publish',
+        'posts_per_page' => - 1,
+    ),*/
+),
+
 
     array(
       'id'      => $prefix . 'creator_additional_persons',
@@ -176,9 +222,8 @@ function oerbox_get_meta_box( $meta_boxes ) {
 $meta_boxes[] = array(
   'id' => 'oerbox1',
   'title' => esc_html__( 'OERbox Metadaten für dieses Objekt/URL', 'oerbox' ),
-  // 2DO: "materials" was hardcoded here, we need to solve this dynamically (post type by pods) -> global setting
-  'post_types' => array('post', 'page' , 'material','attachment'),
-  'context' => 'after_title',
+  'post_types' => array('post'),
+  'context' => 'normal',
   'priority' => 'default',
   'autosave' => 'true',
   'fields' => $fields
@@ -267,14 +312,76 @@ add_filter( 'rwmb_meta_boxes', 'oerbox_get_meta_box' );
         }*/
 
 
+        // Custom post type for OER authors directory (static)
+
+        // 2DO: RENAME!
+
+
+        function your_prefix_register_post_type() {
+
+          $args = array (
+            'label' => esc_html__( 'OER authors', 'text-domain' ),
+            'labels' => array(
+              'menu_name' => esc_html__( 'OER authors', 'text-domain' ),
+              'name_admin_bar' => esc_html__( 'OER author', 'text-domain' ),
+              'add_new' => esc_html__( 'Add new', 'text-domain' ),
+              'add_new_item' => esc_html__( 'Add new OER author', 'text-domain' ),
+              'new_item' => esc_html__( 'New OER author', 'text-domain' ),
+              'edit_item' => esc_html__( 'Edit OER author', 'text-domain' ),
+              'view_item' => esc_html__( 'View OER author', 'text-domain' ),
+              'update_item' => esc_html__( 'Update OER author', 'text-domain' ),
+              'all_items' => esc_html__( 'All OER authors', 'text-domain' ),
+              'search_items' => esc_html__( 'Search OER authors', 'text-domain' ),
+              'parent_item_colon' => esc_html__( 'Parent OER author', 'text-domain' ),
+              'not_found' => esc_html__( 'No OER authors found', 'text-domain' ),
+              'not_found_in_trash' => esc_html__( 'No OER authors found in Trash', 'text-domain' ),
+              'name' => esc_html__( 'OER authors', 'text-domain' ),
+              'singular_name' => esc_html__( 'OER author', 'text-domain' ),
+            ),
+            'public' => true,
+            'exclude_from_search' => false,
+            'publicly_queryable' => true,
+            'show_ui' => true,
+            'show_in_nav_menus' => true,
+            'show_in_admin_bar' => true,
+            'show_in_rest' => true,
+            'menu_position' => 5,
+            'menu_icon' => 'dashicons-id-alt',
+            'capability_type' => array(
+              'oerauthor',
+              'oerauthors',
+            ),
+            'hierarchical' => false,
+            'has_archive' => true,
+            'query_var' => true,
+            'can_export' => true,
+            'rewrite_no_front' => false,
+            'supports' => array(
+              'title',
+              'editor',
+              'thumbnail',
+              'revisions',
+            ),
+            'map_meta_cap' => true,
+            // THIS LINE IS IMPORTANT, OTHERWISE IT WON'T WORK (rewrite=true created by MB Custom Types plugin)
+            // 'rewrite'=> true,
+            'rewrite' => array('slug' => "oerauthor", 'with_front' => TRUE)
+          );
+
+          register_post_type( 'oerauthor', $args );
+        }
+        add_action( 'init', 'your_prefix_register_post_type' );
+
+
+
 
 // https://wpmayor.com/how-to-remove-menu-items-in-admin-depending-on-user-role/
-
 add_action( 'admin_init', 'my_remove_menu_pages' );
 
   function my_remove_menu_pages() {
     global $user_ID;
     // only admins and editors have this option
+    // 2DO: change to non-admins!
     if ( !current_user_can('edit_others_pages') ) {
       remove_menu_page('upload.php'); // Media
       remove_menu_page('tools.php'); // Media
@@ -367,3 +474,99 @@ add_action( 'init', 'remove_author_publish_posts' );
         $current_user->add_cap('edit_published_posts');
       }*/
   }
+
+// https://wordpress.stackexchange.com/questions/298982/can-i-create-users-that-have-access-to-some-other-users-posts-instead-of-all-o
+  function restrict_access_to_company_posts( $caps, $cap, $user_id, $args ) {
+
+      /*
+      We're messing with capabilities only if 'edit_post'
+      is currently checked and the current user has editor role
+      but is not the administrator
+      */
+
+      if ( ! in_array( $cap, [ 'edit_post' ], true ) ) {
+          return $caps;
+      }
+
+      if ( ! user_can( $user_id, 'editor' ) || user_can( $user_id, 'administrator' ) ) {
+          return $caps;
+      }
+
+      /*
+      $args[0] holds post ID. $args var is a bit enigmatic, it contains
+      different stuff depending on the context and there's almost
+      no documentation on that, you've got to trust me on this one :)
+      Anyways, if no post ID is set, we bail out and return default capabilities
+      */
+      if ( empty( $args[0] ) ) {
+          return $caps;
+      }
+
+      /*
+      You can also make sure that you're restricting access
+      to posts only and not pages or other post types
+      */
+      if ( 'post' !== get_post_type( $args[0] ) ) {
+          return $caps;
+      }
+
+      // metabox.io
+      // check coeditor_users field
+      $coeditor_users = rwmb_meta('coeditor_users', '', $args[0] );
+      //print_r($coeditor_users);
+
+      // check if user is set as author
+      $user_info = get_user_by('id', $user_id);
+      $post_author_id = get_post_field( 'post_author', $args[0] );
+
+      // if user is listed in coeditor_users or if user is original author of post, we'll allow editing
+      if(in_array($user_id, $coeditor_users) || $user_info->ID == $post_author_id){
+        return $caps;
+      }
+
+      // finally, in all other cases, we restrict access to this post
+      $caps = [ 'do_not_allow' ];
+
+      return $caps;
+  }
+
+add_filter( 'map_meta_cap', 'restrict_access_to_company_posts', 10, 4 );
+
+function query_company_posts_only( $query ) {
+
+    if ( ! is_admin() || empty( get_current_user_id() ) ) {
+        return $query;
+    }
+
+    /*$editor_company = get_user_meta( get_current_user_id(), 'company', true );
+
+    if ( empty( $editor_company ) ) {
+        return $query;
+    }*/
+
+  /*  $args = array(
+    'relation' => 'OR',
+    array(
+        'key' =>  'author',
+        'value' => get_current_user_id()
+        //'compare' => '='
+    ),
+    array(
+        'key' => 'coeditor_users',
+        'value' => get_current_user_id()
+        //'compare' => 'IN',
+
+    )
+  );
+
+  $query->set($args);*/
+
+  // 2DO: how to set OR??????????
+
+  $query->set( 'author', get_current_user_id() );
+
+  $query->set( 'meta_key', 'coeditor_users' );
+  $query->set( 'meta_value', get_current_user_id() );
+}
+
+add_action( 'pre_get_posts', 'query_company_posts_only', 10, 1 );

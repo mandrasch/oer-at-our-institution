@@ -202,65 +202,7 @@ function oerbox_get_meta_box_attachments($meta_boxes){
 
 
 
-          // Custom post type for OER authors directory (static)
-
-          // 2DO: RENAME!
-
-
-          function your_prefix_register_post_type() {
-
-          	$args = array (
-          		'label' => esc_html__( 'OER authors', 'text-domain' ),
-          		'labels' => array(
-          			'menu_name' => esc_html__( 'OER authors', 'text-domain' ),
-          			'name_admin_bar' => esc_html__( 'OER author', 'text-domain' ),
-          			'add_new' => esc_html__( 'Add new', 'text-domain' ),
-          			'add_new_item' => esc_html__( 'Add new OER author', 'text-domain' ),
-          			'new_item' => esc_html__( 'New OER author', 'text-domain' ),
-          			'edit_item' => esc_html__( 'Edit OER author', 'text-domain' ),
-          			'view_item' => esc_html__( 'View OER author', 'text-domain' ),
-          			'update_item' => esc_html__( 'Update OER author', 'text-domain' ),
-          			'all_items' => esc_html__( 'All OER authors', 'text-domain' ),
-          			'search_items' => esc_html__( 'Search OER authors', 'text-domain' ),
-          			'parent_item_colon' => esc_html__( 'Parent OER author', 'text-domain' ),
-          			'not_found' => esc_html__( 'No OER authors found', 'text-domain' ),
-          			'not_found_in_trash' => esc_html__( 'No OER authors found in Trash', 'text-domain' ),
-          			'name' => esc_html__( 'OER authors', 'text-domain' ),
-          			'singular_name' => esc_html__( 'OER author', 'text-domain' ),
-          		),
-          		'public' => true,
-          		'exclude_from_search' => false,
-          		'publicly_queryable' => true,
-          		'show_ui' => true,
-          		'show_in_nav_menus' => true,
-          		'show_in_admin_bar' => true,
-          		'show_in_rest' => true,
-          		'menu_position' => 5,
-          		'menu_icon' => 'dashicons-id-alt',
-          		'capability_type' => array(
-          			'oer author',
-          			'oer authors',
-          		),
-          		'hierarchical' => false,
-          		'has_archive' => true,
-          		'query_var' => true,
-          		'can_export' => true,
-          		'rewrite_no_front' => false,
-          		'supports' => array(
-          			'title',
-          			'editor',
-          			'thumbnail',
-          			'revisions',
-          		),
-          		'map_meta_cap' => true,
-              // THIS LINE IS IMPORTANT, OTHERWISE IT WON'T WORK (rewrite=true created by MB Custom Types plugin)
-              // 'rewrite'=> true,
-          		'rewrite' => array('slug' => "oer-author", 'with_front' => TRUE)
-          	);
-
-          	register_post_type( 'oer-author', $args );
-          }
-          add_action( 'init', 'your_prefix_register_post_type' );
+          
 
 
           function author_cap_filter( $allcaps, $cap, $args ) {
