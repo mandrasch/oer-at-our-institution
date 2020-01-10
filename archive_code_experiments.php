@@ -261,3 +261,92 @@ function oerbox_get_meta_box_attachments($meta_boxes){
           	register_post_type( 'oer-author', $args );
           }
           add_action( 'init', 'your_prefix_register_post_type' );
+
+
+          function author_cap_filter( $allcaps, $cap, $args ) {
+
+          	// Bail out if we're not asking about a post:
+          	if ( 'edit_post' != $args[0] )
+          		return $allcaps;
+
+          	// Bail out for users who can already edit others posts:
+          	//if ( $allcaps['edit_others_posts'] )
+          		// return $allcaps;
+
+          	// Bail out for users who can't publish posts:
+          	/*if ( !isset( $allcaps['publish_posts'] ) or !$allcaps['publish_posts'] )
+          		return $allcaps;*/
+
+          	// Load the post data:
+          	$post = get_post( $args[2] );
+
+          	// Bail out if the user is the post author:
+          	//if ( $args[1] == $post->post_author )
+          		//return $allcaps;
+
+          	// Bail out if the post isn't pending or published:
+          	//if ( ( 'pending' != $post->post_status ) and ( 'publish' != $post->post_status ) )
+          		//return $allcaps;
+
+          	// Load the author data:
+            $userID = $args[1];
+
+          	// $author = new WP_User( $post->post_author );
+
+          	// Bail out if post author can edit others posts:
+          	//if ( $author->has_cap( 'edit_others_posts' ) )
+          		//return $allcaps;
+
+          	$allcaps[$cap[0]] = true;
+
+          	return $allcaps;
+
+          }
+          add_filter( 'user_has_cap', 'author_cap_filter', 10, 3 );
+
+          // https://wordpress.stackexchange.com/a/313720
+          add_action ('admin_head', 'wpse313020_change_author');
+          function wpse313020_change_author () {
+            global $pagenow;
+            global $post;
+            //var_dump($post->ID);
+            $current_user = wp_get_current_user();
+            // only do this if current user is contributor
+            if ('contributor' == $current_user->roles[0]) {
+              // add capability when we're editing a post, remove it when we're not
+
+              // 2DO: check if function exists, this is from co authors plus
+              // https://wordpress.stackexchange.com/questions/318955/co-authors-plus-how-do-i-get-all-authors-with-a-query
+              $current_co_authors_for_post = get_coauthors();
+              //var_dump($current_co_authors_for_post);
+              $current_user_is_author = false;
+              // 2DO: check also $post->author? (is string id) or is it in get_coauthors?
+              if(count($current_co_authors_for_post) > 0){
+                foreach($current_co_authors_for_post as $author_object){
+                  if($author_object->linked_account == $current_user->user_login){
+                    $current_user_is_author = true;
+                  }
+                  break;
+                }
+              }
+
+              // 2DO: unfortunately this needs a reload so that user can edit this?
+              if ('post.php' == $pagenow && $current_user_is_author){
+                // give user temporary rights to edit other posts (only this will show the coauthors box in post edit screen)
+                // echo "APPROVED";
+                $current_user->add_cap('edit_others_posts');
+              }
+              else{
+                if(current_user_can('edit_others_posts') ){
+                  // force reload, otherwise security hole
+                  $current_user->remove_cap('edit_others_posts');
+
+                  // THIS IS NOT THE USERS POST, A USER TRIED TO ACCESS ANOTHER ID WITH TEMPORARY EDIT RIGHTS
+                  if('post.php' == $pagenow && !$current_user_is_author){
+                    // after reload the permissions are correct, without reload user is able to access edit screen
+                    wp_die("Bitte Seite neu laden", "Please reload");
+                  }
+                }
+               }
+              }
+          }

@@ -346,34 +346,24 @@ function remove_author_publish_posts(){
 }
 add_action( 'init', 'remove_author_publish_posts' );
 
-// let contributors add/change guest authors + upload media for the post they are editing
-// https://wordpress.stackexchange.com/a/313720
-add_action ('admin_init', 'wpse313020_change_author');
-function wpse313020_change_author () {
-  global $pagenow;
-  $current_user = wp_get_current_user();
-  // only do this if current user is contributor
-  if ('contributor' == $current_user->roles[0]) {
-    // add capability when we're editing a post, remove it when we're not
-    if ('post.php' == $pagenow)
-       $current_user->add_cap('edit_others_posts');
-    else
-       $current_user->remove_cap('edit_others_posts');
-    }
-  }
+// 2DO: let contributors add/change guest authors
+// box is only shown with edit_others_post permission
+// this has to be only allowed in edit screen and based on their authorship
+// e.g. with https://wordpress.stackexchange.com/questions/53230/temporary-capability-for-current-user-can/53234 ?
+
 
   // //Let Contributor Role to Upload Media and edit their published posts
   add_action ('admin_init', 'allow_contributors_to_upload_media_and_edit_published');
   function allow_contributors_to_upload_media_and_edit_published(){
       $contributor = get_role('contributor');
-      $contributor->remove_cap('upload_files');
-      $contributor->remove_cap('edit_published_posts');
+      $contributor->add_cap('upload_files');
+      $contributor->add_cap('edit_published_posts'); // 2DO: option in backend?
 
-      $current_user = wp_get_current_user();
-    if ( current_user_can('contributor') && !current_user_can('upload_files') ){
-      $current_user->add_cap('upload_files');
-    }
-    if ( current_user_can('contributor') && !current_user_can('edit_published_posts') ){
-      $current_user->add_cap('edit_published_posts');
-    }
+      /*$current_user = wp_get_current_user();
+      if ( current_user_can('contributor') && !current_user_can('upload_files') ){
+        $current_user->add_cap('upload_files');
+      }
+      if ( current_user_can('contributor') && !current_user_can('edit_published_posts') ){
+        $current_user->add_cap('edit_published_posts');
+      }*/
   }
