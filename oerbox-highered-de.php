@@ -30,10 +30,16 @@ add_filter( 'ajax_query_attachments_args', 'mrfx_show_current_user_attachments' 
 
 function mrfx_show_current_user_attachments( $query ) {
     // 2DO: use try & catch to minimize errors?
+    // 2DO: wp_get_referer() returns false if nonexistent
 
     // restrict media attachments only to media attached to this post
     $referer = parse_url(wp_get_referer());
     parse_str($referer['query'], $params);
+
+    if(strpos($referer['path'],"post-new.php") > 0){
+      // just use bogus value, new post does not have an id yet
+      $query['post_parent'] = -111;
+    }
 
     if (isset($params['post']) && isset($params['action']) && $params['action'] == 'edit'){
       $query['post_parent'] = (int)$params['post']; // filter by current post id
@@ -41,30 +47,6 @@ function mrfx_show_current_user_attachments( $query ) {
     return $query;
 }
 
-// Add relationship between oer authors (static directory) and posts (OERs)
-// 2DO: RENAME!
-add_action( 'mb_relationships_init', function () {
-    MB_Relationships_API::register( [
-        'id'   => 'posts_to_oerauthors',
-
-        'from' => [
-            'object_type' => 'post',
-            'post_type'=> 'post',
-            'meta_box'    => [
-                'title' => 'Manages',
-                'context' => 'after_title'
-            ]
-        ],
-        'to'   => [
-            'object_type' => 'post',
-            'post_type'   => 'oer-author',
-            'meta_box'    => [
-                'title' => 'Managed By',
-                'context'=>'after_title',
-            ],
-        ],
-    ] );
-} );
 
 
 // Generated with
@@ -265,64 +247,133 @@ add_filter( 'rwmb_meta_boxes', 'oerbox_get_meta_box' );
         }
         add_action( 'wp_head', 'oerbox_add_metadata_to_head' );
 
+        // https://wpsites.net/wordpress-admin/add-top-level-custom-admin-menu-link-in-dashboard-to-any-url/
+        add_action( 'admin_menu', 'register_custom_menu_link' );
+        /**
+         * @author    Brad Dalton
+         * @example   http://wpsites.net/wordpress-admin/add-top-level-custom-admin-menu-link-in-dashboard-to-any-url/
+         * @copyright 2014 WP Sites
+         */
+        function register_custom_menu_link(){
+            add_menu_page( 'custom menu link', 'OER authors', 'manage_options', 'users.php?page=view-guest-authors', '', 'dashicons-groups', 4 );
+            // we don't need the redirect, it works with URL in slug-param?
+            //  add_menu_page( 'custom menu link', 'Your Menu Link', 'manage_options', 'any-url', 'wpsites_custom_menu_link', 'dashicons-external', 3 );
+
+        }
+        // see above, we don't need the redirect?
+        /*function wpsites_custom_menu_link(){
+            wp_redirect( 'http://www.example.com', 301 );
+        	exit;
+        }*/
 
 
-// Custom post type for OER authors directory (static)
 
-// 2DO: RENAME!
+// https://wpmayor.com/how-to-remove-menu-items-in-admin-depending-on-user-role/
 
+add_action( 'admin_init', 'my_remove_menu_pages' );
 
-function your_prefix_register_post_type() {
+  function my_remove_menu_pages() {
+    global $user_ID;
+    // only admins and editors have this option
+    if ( !current_user_can('edit_others_pages') ) {
+      remove_menu_page('upload.php'); // Media
+      remove_menu_page('tools.php'); // Media
+    }
+  }
 
-	$args = array (
-		'label' => esc_html__( 'OER authors', 'text-domain' ),
-		'labels' => array(
-			'menu_name' => esc_html__( 'OER authors', 'text-domain' ),
-			'name_admin_bar' => esc_html__( 'OER author', 'text-domain' ),
-			'add_new' => esc_html__( 'Add new', 'text-domain' ),
-			'add_new_item' => esc_html__( 'Add new OER author', 'text-domain' ),
-			'new_item' => esc_html__( 'New OER author', 'text-domain' ),
-			'edit_item' => esc_html__( 'Edit OER author', 'text-domain' ),
-			'view_item' => esc_html__( 'View OER author', 'text-domain' ),
-			'update_item' => esc_html__( 'Update OER author', 'text-domain' ),
-			'all_items' => esc_html__( 'All OER authors', 'text-domain' ),
-			'search_items' => esc_html__( 'Search OER authors', 'text-domain' ),
-			'parent_item_colon' => esc_html__( 'Parent OER author', 'text-domain' ),
-			'not_found' => esc_html__( 'No OER authors found', 'text-domain' ),
-			'not_found_in_trash' => esc_html__( 'No OER authors found in Trash', 'text-domain' ),
-			'name' => esc_html__( 'OER authors', 'text-domain' ),
-			'singular_name' => esc_html__( 'OER author', 'text-domain' ),
-		),
-		'public' => true,
-		'exclude_from_search' => false,
-		'publicly_queryable' => true,
-		'show_ui' => true,
-		'show_in_nav_menus' => true,
-		'show_in_admin_bar' => true,
-		'show_in_rest' => true,
-		'menu_position' => 5,
-		'menu_icon' => 'dashicons-id-alt',
-		'capability_type' => array(
-			'oer author',
-			'oer authors',
-		),
-		'hierarchical' => false,
-		'has_archive' => true,
-		'query_var' => true,
-		'can_export' => true,
-		'rewrite_no_front' => false,
-		'supports' => array(
-			'title',
-			'editor',
-			'thumbnail',
-			'revisions',
-		),
-		'map_meta_cap' => true,
-    // THIS LINE IS IMPORTANT, OTHERWISE IT WON'T WORK (rewrite=true created by MB Custom Types plugin)
-    // 'rewrite'=> true,
-		'rewrite' => array('slug' => "oer-author", 'with_front' => TRUE)
-	);
-
-	register_post_type( 'oer-author', $args );
+// we remove all contact info in "edit profile" because this is done in guest author field
+function filter_user_contact_methods( $methods ) {
+    $methods = array();
+    return $methods;
 }
-add_action( 'init', 'your_prefix_register_post_type' );
+add_filter( 'user_contactmethods', 'filter_user_contact_methods' );
+
+// we remove biographical info as well with a little js trick
+// https://www.majas-lapu-izstrade.lv/how-to-remove-wordpress-admin-profile-page-fields-including-personal-options-biographical-info-website-etc-and-titles-without-js/
+//Remove fields from Admin profile page via JS to hide nickname field which is mandatory
+function remove_personal_options(){
+	if ( ! current_user_can('manage_options') ) { // 'update_core' may be more appropriate
+		echo '<script type="text/javascript">jQuery(document).ready(function($) {
+			$(\'form#your-profile tr.user-description-wrap\').hide(); // Hide
+      $(\'form#your-profile tr.user-url-wrap\').hide(); // Hide
+      $(\'form#your-profile tr.user-profile-picture\').hide(); // Hideuser-profile-picture
+		});</script>';
+	}
+}
+add_action('admin_head','remove_personal_options');
+
+// https://wpvip.com/documentation/add-guest-bylines-to-your-content-with-co-authors-plus/#incorporating-new-profile-fields
+/**
+ * Add a "Google Plus" field to Co-Authors Plus Guest Author
+ */
+add_filter( 'coauthors_guest_author_fields', 'capx_filter_guest_author_fields', 10, 2 );
+function capx_filter_guest_author_fields( $fields_to_return, $groups ) {
+
+
+  // 2DO: why check this?
+	if ( in_array( 'all', $groups ) || in_array( 'contact-info', $groups ) ) {
+
+    $fields_to_return[] = array(
+					'key'      => 'orcid',
+					'label'    => 'ORCID',
+					'group'    => 'contact-info',
+				);
+        $fields_to_return[] = array(
+    					'key'      => 'twitter',
+    					'label'    => 'Twitter',
+    					'group'    => 'contact-info',
+    				);
+
+            // does not work?
+            // 2DO: ask support?
+            /*$keys_to_remove = array('aim','jabber','yahooim');
+            foreach($keys_to_remove as $key_to_remove){
+              $index_found = array_search($key_to_remove, array_column($fields_to_return, 'key'));
+              if($index_found !== FALSE){
+                unset($fields_to_return[$index_found]);
+              }
+            }*/
+	}
+	return $fields_to_return;
+}
+
+// 2DO: move this option in admin menu? (Options framework?)
+// https://thewebtier.com/wordpress/prevent-authors-directly-publish-posts-wordpress/
+function remove_author_publish_posts(){
+    // $wp_roles is an instance of WP_Roles.
+    global $wp_roles;
+    $wp_roles->remove_cap( 'author', 'publish_posts' );
+}
+add_action( 'init', 'remove_author_publish_posts' );
+
+// let contributors add/change guest authors + upload media for the post they are editing
+// https://wordpress.stackexchange.com/a/313720
+add_action ('admin_init', 'wpse313020_change_author');
+function wpse313020_change_author () {
+  global $pagenow;
+  $current_user = wp_get_current_user();
+  // only do this if current user is contributor
+  if ('contributor' == $current_user->roles[0]) {
+    // add capability when we're editing a post, remove it when we're not
+    if ('post.php' == $pagenow)
+       $current_user->add_cap('edit_others_posts');
+    else
+       $current_user->remove_cap('edit_others_posts');
+    }
+  }
+
+  // //Let Contributor Role to Upload Media and edit their published posts
+  add_action ('admin_init', 'allow_contributors_to_upload_media_and_edit_published');
+  function allow_contributors_to_upload_media_and_edit_published(){
+      $contributor = get_role('contributor');
+      $contributor->remove_cap('upload_files');
+      $contributor->remove_cap('edit_published_posts');
+
+      $current_user = wp_get_current_user();
+    if ( current_user_can('contributor') && !current_user_can('upload_files') ){
+      $current_user->add_cap('upload_files');
+    }
+    if ( current_user_can('contributor') && !current_user_can('edit_published_posts') ){
+      $current_user->add_cap('edit_published_posts');
+    }
+  }
