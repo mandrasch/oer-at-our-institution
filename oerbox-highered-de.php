@@ -504,21 +504,7 @@ add_action( 'init', 'remove_editor_publish_posts_and_edit_pages' );
 // e.g. with https://wordpress.stackexchange.com/questions/53230/temporary-capability-for-current-user-can/53234 ?
 
 
-// //Let Contributor Role to Upload Media and edit their published posts
-add_action ('admin_init', 'allow_contributors_to_upload_media_and_edit_published');
-function allow_contributors_to_upload_media_and_edit_published(){
-  $contributor = get_role('contributor');
-  $contributor->add_cap('upload_files');
-  $contributor->add_cap('edit_published_posts'); // 2DO: option in backend?
 
-  /*$current_user = wp_get_current_user();
-  if ( current_user_can('contributor') && !current_user_can('upload_files') ){
-  $current_user->add_cap('upload_files');
-}
-if ( current_user_can('contributor') && !current_user_can('edit_published_posts') ){
-$current_user->add_cap('edit_published_posts');
-}*/
-}
 
 // https://wordpress.stackexchange.com/questions/298982/can-i-create-users-that-have-access-to-some-other-users-posts-instead-of-all-o
 function restrict_access_to_company_posts( $caps, $cap, $user_id, $args ) {
@@ -626,3 +612,31 @@ $query->set( 'meta_value', get_current_user_id() );
 }
 
 add_action( 'pre_get_posts', 'query_company_posts_only', 10, 1 );
+
+// https://wpbeaches.com/change-the-wordpress-post-type-name-to-something-else/
+add_action( 'init', 'cp_change_post_object' );
+// Change dashboard Posts to News
+function cp_change_post_object() {
+    $get_post_type = get_post_type_object('post');
+    $labels = $get_post_type->labels;
+        $labels->name = 'OERs';
+        $labels->singular_name = 'OER';
+        $labels->add_new = 'Add OER';
+        $labels->add_new_item = 'Add OER';
+        $labels->edit_item = 'Edit OER';
+        $labels->new_item = 'OERs';
+        $labels->view_item = 'View OERs';
+        $labels->search_items = 'Search OER';
+        $labels->not_found = 'No OERs found';
+        $labels->not_found_in_trash = 'No OERs found in Trash';
+        $labels->all_items = 'All OERs';
+        $labels->menu_name = 'OERs';
+        $labels->name_admin_bar = 'OER';
+}
+
+// we remove this, media should only be added when in post->add/edit screen
+function remove_add_new_media_from_admin_bar() {
+    global $wp_admin_bar;
+    $wp_admin_bar->remove_menu( 'new-media' );
+}
+add_action( 'wp_before_admin_bar_render', 'remove_add_new_media_from_admin_bar' );

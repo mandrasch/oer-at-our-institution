@@ -202,7 +202,7 @@ function oerbox_get_meta_box_attachments($meta_boxes){
 
 
 
-          
+
 
 
           function author_cap_filter( $allcaps, $cap, $args ) {
@@ -291,4 +291,39 @@ function oerbox_get_meta_box_attachments($meta_boxes){
                 }
                }
               }
+          }
+
+          // https://wpsites.net/wordpress-admin/add-top-level-custom-admin-menu-link-in-dashboard-to-any-url/
+          add_action( 'admin_menu', 'register_custom_menu_link' );
+          /**
+           * @author    Brad Dalton
+           * @example   http://wpsites.net/wordpress-admin/add-top-level-custom-admin-menu-link-in-dashboard-to-any-url/
+           * @copyright 2014 WP Sites
+           */
+          function register_custom_menu_link(){
+              add_menu_page( 'custom menu link', 'OER authors', 'manage_options', 'users.php?page=view-guest-authors', '', 'dashicons-groups', 4 );
+              // we don't need the redirect, it works with URL in slug-param?
+              //  add_menu_page( 'custom menu link', 'Your Menu Link', 'manage_options', 'any-url', 'wpsites_custom_menu_link', 'dashicons-external', 3 );
+
+          }
+          // see above, we don't need the redirect?
+          /*function wpsites_custom_menu_link(){
+              wp_redirect( 'http://www.example.com', 301 );
+            exit;
+          }*/
+
+          // //Let Contributor Role to Upload Media and edit their published posts
+          add_action ('admin_init', 'allow_contributors_to_upload_media_and_edit_published');
+          function allow_contributors_to_upload_media_and_edit_published(){
+            $contributor = get_role('contributor');
+            $contributor->add_cap('upload_files');
+            $contributor->add_cap('edit_published_posts'); // 2DO: option in backend?
+
+            /*$current_user = wp_get_current_user();
+            if ( current_user_can('contributor') && !current_user_can('upload_files') ){
+            $current_user->add_cap('upload_files');
+          }
+          if ( current_user_can('contributor') && !current_user_can('edit_published_posts') ){
+          $current_user->add_cap('edit_published_posts');
+          }*/
           }
