@@ -1,5 +1,7 @@
 Beware: Work in progress
 
+2DO: USE BOILERPLATE, e.g. https://wppb.me/
+
 # OERbox for wordpress
 Experimental wordpress plugin - add custom fields for OER metadata for regular posts and pages via https://metabox.io, fields will be added to HTML head in schema.org format (machine readable information)
 
