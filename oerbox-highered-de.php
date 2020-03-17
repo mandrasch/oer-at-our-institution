@@ -1,13 +1,15 @@
 <?php
 /**
-* Plugin Name: OERbox German Higher Education
+* Plugin Name: OER showroom for faculty/schools
 * Plugin URI: https://oerhoernchen.de
-* Description: Custom fields for OER metadata (German Higher Education)
-* Version: 1.0
+* Description: Publish OER in the open web with schema.org metadata
+* Version: 0.1
 * Author: Matthias Andrasch
 * Author URI: https://oerhoernchen.de
 * License: CC0
 */
+
+// please see information regarding user roles
 
 // 2DO: add custom fields as column? http://localhost/wordpress/pods/wp-admin/upload.php
 // 2DO: add files to sitemap.xml?
@@ -16,7 +18,7 @@
 // 2DO: check out http://wordpress.org/extend/plugins/image-source-control-isc/ as well?
 // 2DO: checkout https://de.wordpress.org/plugins/featured-image-caption/
 
-// 2DO: change everything to EDITOR USER ROLE, we don't work with author/contributor anymore (too complicated)
+
 
 // 2DO: Perfomance: Don't set permissions on every page load, what is a better way?
 
@@ -403,7 +405,7 @@ function oerbox_add_metadata_to_head() {
     $editor = get_role('editor');
     $editor->add_cap('edit_oerauthor');
     $editor->add_cap('edit_oerauthors');
-    $editor->remove_cap('publish_oerauthors'); // 2DO: option in backend wheter to allow that?
+    $editor->remove_cap('publish_oerauthors'); // 2DO: option in backend wheter to allow that? 2DO: restrict this only for author role?
     $editor->add_cap('edit_published_oerauthors');
     $editor->add_cap('edit_others_oerauthors');
 
@@ -414,6 +416,15 @@ function oerbox_add_metadata_to_head() {
            'read_post' => 'read_course_document',
            'read_private_posts' => 'read_private_course_documents',
            'delete_post' => 'delete_course_document'*/
+
+    // allow for admins:
+    $editor = get_role('administrator');
+    $editor->add_cap('edit_oerauthor');
+    $editor->add_cap('edit_oerauthors');
+    $editor->add_cap('publish_oerauthors');
+    $editor->add_cap('edit_published_oerauthors');
+    $editor->add_cap('edit_others_oerauthors');
+
   }
   add_action ('admin_init', 'allow_editors_access_to_oerauthors');
 

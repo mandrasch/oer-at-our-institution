@@ -11,6 +11,13 @@ Experimental wordpress plugin - add custom fields for OER metadata for regular p
 
 Approach: 1 URL = 1 OER (creative work, contains descriptions and multiple media objects)
 
+## User roles
+
+This plugin does not support "author" roles right now, every author should be an "editor", otherwise the hacks won't work.
+
+- editor: Professor, Student
+- admin: Technical staff, Persons in charge (they will allow publishing)
+
 Goals:
 - :heavy_check_mark: add license URL to "link rel="license""-tag in HTML head
 - :o: Add schema.org LD-JSON to HTML head in a compliant way (see source code of https://www.oerbw.de/edu-sharing/components/render/eb6f6159-021e-4985-8aaa-4d8a36e9b6a2)
