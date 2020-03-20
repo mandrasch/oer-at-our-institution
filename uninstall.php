@@ -19,10 +19,10 @@
  * For more information, see the following discussion:
  * https://github.com/tommcfarlin/WordPress-Plugin-Boilerplate/pull/123#issuecomment-28541913
  *
- * @link       MA
+ * @link       https://matthias-andrasch.de
  * @since      1.0.0
  *
- * @package    Oer_Showroom
+ * @package    Oer_At_Our_Institution
  */
 
 // If uninstall not called from WordPress, then exit.

@@ -6,11 +6,11 @@
  * Loads and defines the internationalization files for this plugin
  * so that it is ready for translation.
  *
- * @link       MA
+ * @link       https://matthias-andrasch.de
  * @since      1.0.0
  *
- * @package    Oer_Showroom
- * @subpackage Oer_Showroom/includes
+ * @package    Oer_At_Our_Institution
+ * @subpackage Oer_At_Our_Institution/includes
  */
 
 /**
@@ -20,11 +20,11 @@
  * so that it is ready for translation.
  *
  * @since      1.0.0
- * @package    Oer_Showroom
- * @subpackage Oer_Showroom/includes
- * @author     MA <MA>
+ * @package    Oer_At_Our_Institution
+ * @subpackage Oer_At_Our_Institution/includes
+ * @author     Matthias Andrasch <info@matthias-andrasch.de>
  */
-class Oer_Showroom_i18n {
+class Oer_At_Our_Institution_i18n {
 
 
 	/**
@@ -35,7 +35,7 @@ class Oer_Showroom_i18n {
 	public function load_plugin_textdomain() {
 
 		load_plugin_textdomain(
-			'oer-showroom',
+			'oer-at-our-institution',
 			false,
 			dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/'
 		);

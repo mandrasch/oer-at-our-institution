@@ -3,11 +3,11 @@
 /**
  * Fired during plugin activation
  *
- * @link       MA
+ * @link       https://matthias-andrasch.de
  * @since      1.0.0
  *
- * @package    Oer_Showroom
- * @subpackage Oer_Showroom/includes
+ * @package    Oer_At_Our_Institution
+ * @subpackage Oer_At_Our_Institution/includes
  */
 
 /**
@@ -16,11 +16,11 @@
  * This class defines all code necessary to run during the plugin's activation.
  *
  * @since      1.0.0
- * @package    Oer_Showroom
- * @subpackage Oer_Showroom/includes
- * @author     MA <MA>
+ * @package    Oer_At_Our_Institution
+ * @subpackage Oer_At_Our_Institution/includes
+ * @author     Matthias Andrasch <info@matthias-andrasch.de>
  */
-class Oer_Showroom_Activator {
+class Oer_At_Our_Institution_Activator {
 
 	/**
 	 * Short Description. (use period)

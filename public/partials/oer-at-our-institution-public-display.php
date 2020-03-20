@@ -5,11 +5,11 @@
  *
  * This file is used to markup the public-facing aspects of the plugin.
  *
- * @link       MA
+ * @link       https://matthias-andrasch.de
  * @since      1.0.0
  *
- * @package    Oer_Showroom
- * @subpackage Oer_Showroom/public/partials
+ * @package    Oer_At_Our_Institution
+ * @subpackage Oer_At_Our_Institution/public/partials
  */
 ?>
 

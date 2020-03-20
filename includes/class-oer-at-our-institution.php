@@ -6,11 +6,11 @@
  * A class definition that includes attributes and functions used across both the
  * public-facing side of the site and the admin area.
  *
- * @link       MA
+ * @link       https://matthias-andrasch.de
  * @since      1.0.0
  *
- * @package    Oer_Showroom
- * @subpackage Oer_Showroom/includes
+ * @package    Oer_At_Our_Institution
+ * @subpackage Oer_At_Our_Institution/includes
  */
 
 /**
@@ -23,11 +23,11 @@
  * version of the plugin.
  *
  * @since      1.0.0
- * @package    Oer_Showroom
- * @subpackage Oer_Showroom/includes
- * @author     MA <MA>
+ * @package    Oer_At_Our_Institution
+ * @subpackage Oer_At_Our_Institution/includes
+ * @author     Matthias Andrasch <info@matthias-andrasch.de>
  */
-class Oer_Showroom {
+class Oer_At_Our_Institution {
 
 	/**
 	 * The loader that's responsible for maintaining and registering all hooks that power
@@ -35,7 +35,7 @@ class Oer_Showroom {
 	 *
 	 * @since    1.0.0
 	 * @access   protected
-	 * @var      Oer_Showroom_Loader    $loader    Maintains and registers all hooks for the plugin.
+	 * @var      Oer_At_Our_Institution_Loader    $loader    Maintains and registers all hooks for the plugin.
 	 */
 	protected $loader;
 
@@ -67,12 +67,12 @@ class Oer_Showroom {
 	 * @since    1.0.0
 	 */
 	public function __construct() {
-		if ( defined( 'OER_SHOWROOM_VERSION' ) ) {
-			$this->version = OER_SHOWROOM_VERSION;
+		if ( defined( 'OER_AT_OUR_INSTITUTION_VERSION' ) ) {
+			$this->version = OER_AT_OUR_INSTITUTION_VERSION;
 		} else {
 			$this->version = '1.0.0';
 		}
-		$this->plugin_name = 'oer-showroom';
+		$this->plugin_name = 'oer-at-our-institution';
 
 		$this->load_dependencies();
 		$this->set_locale();
@@ -86,10 +86,10 @@ class Oer_Showroom {
 	 *
 	 * Include the following files that make up the plugin:
 	 *
-	 * - Oer_Showroom_Loader. Orchestrates the hooks of the plugin.
-	 * - Oer_Showroom_i18n. Defines internationalization functionality.
-	 * - Oer_Showroom_Admin. Defines all hooks for the admin area.
-	 * - Oer_Showroom_Public. Defines all hooks for the public side of the site.
+	 * - Oer_At_Our_Institution_Loader. Orchestrates the hooks of the plugin.
+	 * - Oer_At_Our_Institution_i18n. Defines internationalization functionality.
+	 * - Oer_At_Our_Institution_Admin. Defines all hooks for the admin area.
+	 * - Oer_At_Our_Institution_Public. Defines all hooks for the public side of the site.
 	 *
 	 * Create an instance of the loader which will be used to register the hooks
 	 * with WordPress.
@@ -103,33 +103,33 @@ class Oer_Showroom {
 		 * The class responsible for orchestrating the actions and filters of the
 		 * core plugin.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-oer-showroom-loader.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-oer-at-our-institution-loader.php';
 
 		/**
 		 * The class responsible for defining internationalization functionality
 		 * of the plugin.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-oer-showroom-i18n.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-oer-at-our-institution-i18n.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-oer-showroom-admin.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-oer-at-our-institution-admin.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the public-facing
 		 * side of the site.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-oer-showroom-public.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-oer-at-our-institution-public.php';
 
-		$this->loader = new Oer_Showroom_Loader();
+		$this->loader = new Oer_At_Our_Institution_Loader();
 
 	}
 
 	/**
 	 * Define the locale for this plugin for internationalization.
 	 *
-	 * Uses the Oer_Showroom_i18n class in order to set the domain and to register the hook
+	 * Uses the Oer_At_Our_Institution_i18n class in order to set the domain and to register the hook
 	 * with WordPress.
 	 *
 	 * @since    1.0.0
@@ -137,7 +137,7 @@ class Oer_Showroom {
 	 */
 	private function set_locale() {
 
-		$plugin_i18n = new Oer_Showroom_i18n();
+		$plugin_i18n = new Oer_At_Our_Institution_i18n();
 
 		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
 
@@ -152,7 +152,7 @@ class Oer_Showroom {
 	 */
 	private function define_admin_hooks() {
 
-		$plugin_admin = new Oer_Showroom_Admin( $this->get_plugin_name(), $this->get_version() );
+		$plugin_admin = new Oer_At_Our_Institution_Admin( $this->get_plugin_name(), $this->get_version() );
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
@@ -168,7 +168,7 @@ class Oer_Showroom {
 	 */
 	private function define_public_hooks() {
 
-		$plugin_public = new Oer_Showroom_Public( $this->get_plugin_name(), $this->get_version() );
+		$plugin_public = new Oer_At_Our_Institution_Public( $this->get_plugin_name(), $this->get_version() );
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
@@ -199,7 +199,7 @@ class Oer_Showroom {
 	 * The reference to the class that orchestrates the hooks with the plugin.
 	 *
 	 * @since     1.0.0
-	 * @return    Oer_Showroom_Loader    Orchestrates the hooks of the plugin.
+	 * @return    Oer_At_Our_Institution_Loader    Orchestrates the hooks of the plugin.
 	 */
 	public function get_loader() {
 		return $this->loader;
