@@ -23,6 +23,11 @@
 *
 *
 */
+
+
+include(plugin_dir_path(__FILE__).'oer-showroom_metabox_fields_oerauthor.php');
+
+
 /*
 * First small hack: Restrict media library selection to current post to avoid
 * media file chaos, we hook into the ajax loading action when media library
@@ -36,28 +41,7 @@
 */
 
 
-include(plugin_dir_path(__FILE__).'oer-showroom_metabox_fields_oerauthor.php');
 
-add_filter('ajax_query_attachments_args', 'oershowroom_only_show_attachments_attached_to_post');
-function oershowroom_only_show_attachments_attached_to_post($query)
-{
-    // 2DO: use try & catch to minimize errors?
-    // 2DO: wp_get_referer() returns false if nonexistent
-
-    // restrict media attachments only to media attached to this post (id)
-    $referer = parse_url(wp_get_referer());
-    parse_str($referer['query'], $params);
-
-    if (strpos($referer['path'], "post-new.php") > 0) {
-        // just use bogus value, new post does not have an id yet
-        $query['post_parent'] = -111;
-    }
-
-    if (isset($params['post']) && isset($params['action']) && $params['action'] == 'edit') {
-        $query['post_parent'] = (int)$params['post']; // filter by current post id
-    }
-    return $query;
-}
 
 /* this is the important metabox for posts (below posts) */
 function oershowroom_create_meta_box_oer($meta_boxes)
